@@ -34,15 +34,18 @@
       <p>Search, discover and connect with the best local talent from Mombasa.</p>
     </div>
     <nav>
-      <ul>
-        <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="Discover Talent.html">Discover Talent</a></li>
-        <li><a href="Upload Talent.html">Upload Talent</a></li>
-        <li><a href="videos.html">Videos</a></li>
-        <li><a href="tiktok-feed.html">Discover Feed</a></li>
-        <li><a href="admin.html">Admin</a></li>
-        <li><a href="Artist profile.html">Artist Profile</a></li>
-        <li><a href="Contact.html">Contact</a></li>
+      <button class="hamburger" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+<ul class="nav-menu">
+        <li><a href="index.html" class="active">🏠 Home</a></li>
+        <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
+        <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+        <li><a href="videos.html">🎥 Videos</a></li>
+        <li><a href="Artist profile.html">👤 Artist Profile</a></li>
+        <li><a href="Contact.html">📧 Contact</a></li>
       </ul>
     </nav>
   </header>
@@ -99,6 +102,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      // Search functionality
       const searchInput = document.getElementById('talentSearch');
       const talentGrid = document.getElementById('talentGrid');
       const noResults = document.getElementById('noResults');
@@ -118,8 +122,45 @@
         noResults.hidden = visibleCount > 0;
       }
 
-      searchInput.addEventListener('input', filterTalents);
-      filterTalents();
+      if (searchInput) searchInput.addEventListener('input', filterTalents);
+      if (talentGrid) filterTalents();
+
+      // Responsive navigation
+      const hamburger = document.querySelector('.hamburger');
+      const navUl = document.querySelector('nav ul');
+      const nav = document.querySelector('nav');
+
+      if (hamburger && navUl) {
+        hamburger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          hamburger.classList.toggle('active');
+          navUl.classList.toggle('active');
+        });
+
+        // Close menu on link click
+        document.querySelectorAll('nav a').forEach(link => {
+          link.addEventListener('click', () => {
+            hamburger.classList.remove('active');
+            navUl.classList.remove('active');
+          });
+        });
+
+        // Close menu on outside click
+        document.addEventListener('click', (e) => {
+          if (!nav.contains(e.target)) {
+            hamburger.classList.remove('active');
+            navUl.classList.remove('active');
+          }
+        });
+      }
+
+      // Active nav link
+      const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+      document.querySelectorAll('nav a').forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+          link.classList.add('active');
+        }
+      });
     });
   </script>
 </body>

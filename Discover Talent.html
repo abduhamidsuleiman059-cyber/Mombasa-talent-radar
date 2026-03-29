@@ -12,16 +12,19 @@
         <p>Find amazing local talents performing on Mombasa's streets.</p>
     </header>
     <nav>
-        <ul>
-            <a href="index.html">Home</a>
-            <a href="Discover Talent.html">Discover Talent</a>
-            <a href="Upload Talent.html">Upload Talent</a>
-            <a href="videos.html">Videos</a>
-            <a href="tiktok-feed.html">Discover Feed</a>
-            <a href="admin.html">Admin</a>
-            <a href="Artist profile.html">Artist Profile</a>
-            <a href="Contact.html">Contact</a>
-        </ul>
+      <button class="hamburger" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul>
+        <li><a href="index.html">🏠 Home</a></li>
+        <li><a href="Discover Talent.html" class="active">🔍 Discover Talent</a></li>
+        <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+        <li><a href="videos.html">🎥 Videos</a></li>
+        <li><a href="Artist profile.html">👤 Artist Profile</a></li>
+        <li><a href="Contact.html">📧 Contact</a></li>
+      </ul>
     </nav>
     <section class="discover-container">
         <div class="discover-card">
@@ -82,6 +85,44 @@
     </div>
 
     <script>
+        // Responsive navigation (shared)
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.querySelector('.hamburger');
+            const navUl = document.querySelector('nav ul');
+            const nav = document.querySelector('nav');
+
+            if (hamburger && navUl) {
+                hamburger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    hamburger.classList.toggle('active');
+                    navUl.classList.toggle('active');
+                });
+
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        hamburger.classList.remove('active');
+                        navUl.classList.remove('active');
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!nav.contains(e.target)) {
+                        hamburger.classList.remove('active');
+                        navUl.classList.remove('active');
+                    }
+                });
+            }
+
+            // Active nav link
+            const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('nav a').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Original page script
         async function appendSavedTalents() {
             const container = document.querySelector('.discover-container');
             if (!container) return;
@@ -124,7 +165,6 @@
                 viewBtn.dataset.talent = JSON.stringify(talent);
             });
 
-            // Setup modal functionality
             setupModalFunctionality();
         }
 
@@ -199,7 +239,6 @@
                 });
             });
 
-            // Close modal
             function hideModal() {
                 modal.style.display = 'none';
 
@@ -222,7 +261,6 @@
             closeModal.addEventListener('click', hideModal);
             closeBtn.addEventListener('click', hideModal);
 
-            // Close modal when clicking outside
             window.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     hideModal();
@@ -231,24 +269,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', appendSavedTalents);
-    </script>
-
-    <script>
-        // Active Navigation Script
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPath = window.location.pathname.split('/').pop();
-            console.log('Current path:', currentPath);
-            const navLinks = document.querySelectorAll('nav a');
-
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href');
-                console.log('Checking link:', linkHref);
-                if (linkHref === currentPath || (currentPath === '' && linkHref === 'index.html')) {
-                    link.classList.add('active');
-                    console.log('Added active to:', linkHref);
-                }
-            });
-        });
     </script>
 
 </body>

@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Admin - Mombasa Talent Radar</title>
+    <style>
+        .upload-result {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .upload-result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .upload-result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .admin-card {
+            position: relative;
+        }
+        .admin-actions {
+            margin-top: 10px;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        .contact-admin-section .discover-container .discover-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -13,14 +53,12 @@
     </header>
     <nav>
         <ul>
-            <a href="index.html">Home</a>
-            <a href="Discover Talent.html">Discover Talent</a>
-            <a href="Upload Talent.html">Upload Talent</a>
-            <a href="videos.html">Videos</a>
-            <a href="tiktok-feed.html">Discover Feed</a>
-            <a href="admin.html" class="active">Admin</a>
-            <a href="Artist profile.html">Artist Profile</a>
-            <a href="Contact.html">Contact</a>
+            <li><a href="index.html">🏠 Home</a></li>
+            <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
+            <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+            <li><a href="videos.html">🎥 Videos</a></li>
+            <li><a href="Artist profile.html">👤 Artist Profile</a></li>
+            <li><a href="Contact.html">📧 Contact</a></li>
         </ul>
     </nav>
 
@@ -38,125 +76,65 @@
 
     <script>
         async function loadAdminData() {
-            const adminStatus = document.getElementById('adminStatus');
             const adminList = document.getElementById('adminList');
-            const contactStatus = document.getElementById('contactStatus');
             const contactList = document.getElementById('contactList');
-            adminStatus.textContent = 'Loading admin data...';
-            contactStatus.textContent = 'Loading messages...';
-
-            let talents = [];
-            let contacts = [];
+            const adminStatus = document.getElementById('adminStatus');
+            const contactStatus = document.getElementById('contactStatus');
 
             try {
-                const [talentResponse, contactResponse] = await Promise.all([
-                    fetch('/api/talents'),
-                    fetch('/api/contacts')
-                ]);
+                // Load talents
+                const talentsRes = await fetch('/api/talents');
+                const talents = await talentsRes.json();
+                adminList.innerHTML = talents.map(talent => `
+                    <div class="discover-card admin-card">
+                        <img src="${talent.imageData}" alt="${talent.name}">
+                        <h3>${talent.name}</h3>
+                        <p>${talent.category}</p>
+                        <p>${talent.description.substring(0, 80)}${talent.description.length > 80 ? '...' : ''}</p>
+                        <div class="admin-actions">
+                            <button onclick="deleteTalent('${talent.id}')" class="delete-btn">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('') || '<p>No talents uploaded yet.</p>';
 
-                if (!talentResponse.ok) {
-                    throw new Error('Talents endpoint returned ' + talentResponse.status);
-                }
-                if (!contactResponse.ok) {
-                    throw new Error('Contacts endpoint returned ' + contactResponse.status);
-                }
+                adminStatus.textContent = `Loaded ${talents.length} talents`;
+                adminStatus.className = 'upload-result success';
 
-                talents = await talentResponse.json();
-                contacts = await contactResponse.json();
+                // Load contacts
+                const contactsRes = await fetch('/api/contacts');
+                const contacts = await contactsRes.json();
+                contactList.innerHTML = contacts.map(contact => `
+                    <div class="discover-card admin-card">
+                        <h3>${contact.name} (${contact.email})</h3>
+                        <p>${contact.message.substring(0, 100)}${contact.message.length > 100 ? '...' : ''}</p>
+                        <small>${new Date(contact.submittedAt).toLocaleString()}</small>
+                    </div>
+                `).join('') || '<p>No contacts yet.</p>';
+
+                contactStatus.textContent = `Loaded ${contacts.length} contacts`;
+                contactStatus.className = 'upload-result success';
             } catch (error) {
-                adminStatus.textContent = 'Unable to load backend data. Using local fallback for talents.';
-                contactStatus.textContent = 'Unable to load backend messages. Showing local fallback if available.';
-                console.warn('Admin panel load failed:', error);
-                talents = JSON.parse(localStorage.getItem('mombasaTalents') || '[]');
-                contacts = JSON.parse(localStorage.getItem('mombasaContacts') || '[]');
-            }
-
-            adminStatus.innerHTML = `<strong>${talents.length}</strong> talent entries loaded.`;
-            adminList.innerHTML = '';
-
-            if (!talents.length) {
-                adminList.innerHTML = '<p><strong>No talents available.</strong> Upload a new talent from the Upload Talent page.</p>';
-            } else {
-                talents.forEach((talent) => {
-                    const card = document.createElement('div');
-                    card.className = 'discover-card';
-                    card.innerHTML = `
-                        <img src="${talent.imageData || 'images/singer.jpg'}" alt="${talent.name}">
-                        <h3>${talent.name || 'Unknown'}</h3>
-                        <p>${talent.category || 'Unknown'}</p>
-                        <p style="font-size: 0.9rem; color: #b8c9e0;">${(talent.description || 'No description').substring(0, 90)}${(talent.description || '').length > 90 ? '...' : ''}</p>
-                        <button class="view-button">View Details</button>
-                        <button class="delete-button">Delete</button>
-                    `;
-
-                    const viewBtn = card.querySelector('.view-button');
-                    const deleteBtn = card.querySelector('.delete-button');
-                    viewBtn.addEventListener('click', () => showDetails(talent));
-                    deleteBtn.addEventListener('click', () => deleteTalent(talent.id, card));
-                    adminList.appendChild(card);
-                });
-            }
-
-            contactList.innerHTML = '';
-            if (!contacts.length) {
-                contactStatus.innerHTML = '<strong>No contact messages yet.</strong> Messages will appear here when users send them via the Contact page.';
-            } else {
-                contactStatus.innerHTML = `<strong>${contacts.length}</strong> contact messages received.`;
-                contacts.forEach((message) => {
-                    const card = document.createElement('div');
-                    card.className = 'discover-card';
-                    card.innerHTML = `
-                        <h3>${message.name || 'Unknown sender'}</h3>
-                        <p><strong>Email:</strong> ${message.email || 'Not provided'}</p>
-                        <p><strong>Subject:</strong> ${message.subject || 'No subject'}</p>
-                        <p>${(message.message || 'No message').substring(0, 180)}${(message.message || '').length > 180 ? '...' : ''}</p>
-                        <p style="font-size: 0.8rem; color: #b8c9e0;">Sent: ${message.sentAt || 'Unknown'}</p>
-                    `;
-                    contactList.appendChild(card);
-                });
+                adminStatus.textContent = 'Error loading data: ' + error.message;
+                adminStatus.className = 'upload-result error';
+                contactStatus.textContent = 'Error loading data: ' + error.message;
+                contactStatus.className = 'upload-result error';
             }
         }
 
-        function showDetails(talent) {
-            let detailText = `Name: ${talent.name || 'Unknown'}\n`;
-            detailText += `Category: ${talent.category || 'Unknown'}\n`;
-            detailText += `Description: ${talent.description || '-'}\n`;
-            detailText += `Uploaded: ${talent.uploadedAt || '-'}\n`;
-            detailText += `Image: ${talent.imageData || 'None'}\n`;
-            detailText += `Video: ${talent.videoData || 'None'}\n`;
-            detailText += `Voice: ${talent.voiceData || 'None'}\n`;
-            alert(detailText);
-        }
-
-        async function deleteTalent(id, card) {
-            const confirmed = confirm('Delete this talent entry?');
-            if (!confirmed) return;
-
-            let deleted = false;
+        window.deleteTalent = async (id) => {
+            if (!confirm('Delete this talent?')) return;
             try {
-                const response = await fetch(`/api/talents/${encodeURIComponent(id)}`, {
-                    method: 'DELETE'
-                });
-                if (response.ok) {
-                    deleted = true;
+                const res = await fetch(`/api/talents/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    loadAdminData();
+                    alert('Talent deleted');
+                } else {
+                    alert('Delete failed');
                 }
             } catch (error) {
-                console.warn('Backend delete failed, falling back to local delete:', error);
+                alert('Error: ' + error.message);
             }
-
-            if (!deleted) {
-                const savedTalents = JSON.parse(localStorage.getItem('mombasaTalents') || '[]');
-                const filtered = savedTalents.filter(item => item.id !== id);
-                localStorage.setItem('mombasaTalents', JSON.stringify(filtered));
-                deleted = true;
-            }
-
-            if (deleted) {
-                card.remove();
-                const adminStatus = document.getElementById('adminStatus');
-                adminStatus.innerHTML = '<strong>Entry deleted.</strong>';
-            }
-        }
+        };
 
         document.addEventListener('DOMContentLoaded', loadAdminData);
     </script>

@@ -13,14 +13,12 @@
         <h1>Mombasa Talent Radar</h1>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="Discover Talent.html">Discover Talent</a></li>
-                <li><a href="Upload Talent.html">Upload Talent</a></li>
-                <li><a href="videos.html">Videos</a></li>
-                <li><a href="tiktok-feed.html">Discover Feed</a></li>
-                <li><a href="admin.html">Admin</a></li>
-                <li><a href="Artist profile.html">Artist Profile</a></li>
-                <li><a href="Contact.html">Contact</a></li>
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
+                <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+                <li><a href="videos.html">🎥 Videos</a></li>
+                <li><a href="Artist profile.html" class="active">👤 Artist Profile</a></li>
+                <li><a href="Contact.html">📧 Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -29,35 +27,91 @@
     <section class="artist-profile">
         <div class="profile-container">
             <div class="profile-image">
-                <img src="images/singer.jpg" alt="Featured Artist">
+                <img id="profileImg" src="images/singer.jpg" alt="Featured Artist">
             </div>
             <div class="profile-info">
-                <h2>Featured Artist: Local Singer</h2>
-                <p><strong>Name:</strong> Amina Hassan</p>
-                <p><strong>Genre:</strong> Afrobeat, Bongo Flava</p>
+                <h2 id="profileName">Loading Artist...</h2>
+                <p><strong>Name:</strong> <span id="artistName"></span></p>
+                <p><strong>Category:</strong> <span id="artistCategory"></span></p>
                 <p><strong>Location:</strong> Mombasa, Kenya</p>
-                <p><strong>Bio:</strong> Amina is a talented singer from Mombasa with a voice that captivates audiences. She has performed at various local events and is known for her energetic performances and soulful melodies.</p>
-                <p><strong>Achievements:</strong> Winner of Mombasa Music Awards 2025, Featured in local radio stations.</p>
-                <button>Contact Artist</button>
+                <p><strong>Bio:</strong> <span id="artistBio"></span></p>
+                <p><strong>Uploaded:</strong> <span id="uploadDate"></span></p>
+                <div id="mediaSection" class="modal-media">
+                    <div id="voiceSection" class="media-section" style="display:none;">
+                        <h4>🎵 Voice/Audio</h4>
+                        <audio id="modalVoice" controls style="width: 100%; margin-top: 10px;"></audio>
+                    </div>
+                    <div id="videoSection" class="media-section" style="display:none;">
+                        <h4>🎬 Video</h4>
+                        <video id="modalVideo" controls style="width: 100%; height: auto; margin-top: 10px; border-radius: 8px;"></video>
+                    </div>
+                </div>
+                <button onclick="contactArtist()">Contact Artist</button>
             </div>
         </div>
     </section>
 
     <script>
-        // Active Navigation Script
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPath = window.location.pathname.split('/').pop();
-            const navLinks = document.querySelectorAll('nav a');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (!id) {
+                document.body.innerHTML += '<p style="text-align:center; color:#ff6b6b;">No artist ID specified. <a href="Discover Talent.html">Discover talents</a></p>';
+                return;
+            }
 
-            navLinks.forEach(link => {
-                const linkHref = link.getAttribute('href');
-                if (linkHref === currentPath || (currentPath === '' && linkHref === 'index.html')) {
-                    link.classList.add('active');
+            try {
+                const res = await fetch('/api/talents');
+                const talents = await res.json();
+                const talent = talents.find(t => t.id === id);
+                if (!talent) {
+                    document.body.innerHTML += '<p style="text-align:center; color:#ff6b6b;">Artist not found. <a href="Discover Talent.html">Discover talents</a></p>';
+                    return;
                 }
-            });
+
+                // Populate
+                document.getElementById('profileImg').src = talent.imageData;
+                document.getElementById('profileImg').alt = talent.name;
+                document.getElementById('profileName').textContent = talent.name;
+                document.getElementById('artistName').textContent = talent.name;
+                document.getElementById('artistCategory').textContent = talent.category;
+                document.getElementById('artistBio').textContent = talent.description;
+                document.getElementById('uploadDate').textContent = new Date(talent.uploadedAt).toLocaleDateString();
+
+                if (talent.voiceData) {
+                    document.getElementById('voiceSection').style.display = 'block';
+                    document.getElementById('modalVoice').src = talent.voiceData;
+                }
+                if (talent.videoData) {
+                    document.getElementById('videoSection').style.display = 'block';
+                    document.getElementById('modalVideo').src = talent.videoData;
+                }
+
+                // Update discover modals to link here
+                const viewButtons = document.querySelectorAll('.view-button');
+                viewButtons.forEach(btn => {
+                    btn.textContent = 'View Profile';
+                    btn.onclick = () => window.location.href = `Artist profile.html?id=${talent.id}`;
+                });
+            } catch (error) {
+                console.error('Load profile failed:', error);
+            }
+        });
+
+        function contactArtist() {
+            window.location.href = 'Contact.html?ref=artist';
+            alert('Redirecting to contact form...');
+        }
+
+        // Active Navigation Script
+        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
         });
     </script>
 
 </body>
-</html></content>
-<parameter name="filePath">c:\Users\SALAH\Desktop\Mombasa-talent-radar\Artist profile.html
+</html>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Videos - Mombasa Talent Radar</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="tiktok-feed.css">
     <style>
         .search-bar {
             margin: 18px auto 12px;
@@ -34,6 +35,56 @@
         .search-bar input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
+
+        .video-page-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .video-feed {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .section-header h2, .section-header h3 {
+            margin: 0;
+            color: #fff;
+        }
+
+        .upload-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .upload-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .video-meta {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -41,14 +92,12 @@
         <h1>Mombasa Talent Radar</h1>
         <nav>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="Discover Talent.html">Discover Talent</a></li>
-                <li><a href="Upload Talent.html">Upload Talent</a></li>
-                <li><a href="videos.html">Videos</a></li>
-                <li><a href="tiktok-feed.html">Discover Feed</a></li>
-                <li><a href="admin.html">Admin</a></li>
-                <li><a href="Artist profile.html">Artist Profile</a></li>
-                <li><a href="Contact.html">Contact</a></li>
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
+                <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+                <li><a href="videos.html" class="active">🎥 Videos</a></li>
+                <li><a href="Artist profile.html">👤 Artist Profile</a></li>
+                <li><a href="Contact.html">📧 Contact</a></li>
             </ul>
         </nav>
     </header>
@@ -83,259 +132,28 @@
                 </div>
             </div>
 
-            <div id="videoFeedContainer" class="video-feed-list"></div>
+            <div id="videoFeedContainer" class="tiktok-feed-container"></div>
         </main>
     </div>
 
     <div id="toast" class="toast"></div>
 
+    <script src="tiktok-feed.js"></script>
     <script>
-        const storageKey = 'mombasaTalents';
-        const interactionsKey = 'mombasaVideoInteractions';
-
-        const videoFeedContainer = document.getElementById('videoFeedContainer');
-        const searchInput = document.getElementById('videoSearchInput');
-        const toast = document.getElementById('toast');
-        let allVideoItems = [];
-
-        const defaultSampleVideos = [
-            {
-                name: 'Mombasa Street Dance',
-                category: 'Dancer',
-                description: 'Short street dance clip with energy and movement.',
-                imageData: 'images/dancer.jpg',
-                videoData: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-                uploadedAt: '2026-03-25T14:00:00Z'
-            },
-            {
-                name: 'Afrobeat Performance',
-                category: 'Singer',
-                description: 'High-energy Afrobeat sample with lively rhythm.',
-                imageData: 'images/singer.jpg',
-                videoData: 'https://www.w3schools.com/html/mov_bbb.mp4',
-                uploadedAt: '2026-03-24T17:15:00Z'
-            },
-            {
-                name: 'Spoken Word Snippet',
-                category: 'Poet',
-                description: 'Powerful spoken word example for community voices.',
-                imageData: 'images/singer2.jpg',
-                videoData: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                uploadedAt: '2026-03-23T09:30:00Z'
-            },
-            {
-                name: 'Quick Beat Session',
-                category: 'Producer',
-                description: 'Beat-making sample to inspire local producers.',
-                imageData: 'images/painter.jpg',
-                videoData: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-                uploadedAt: '2026-03-22T12:45:00Z'
-            },
-            {
-                name: 'Performance Teaser',
-                category: 'Artist',
-                description: 'A short teaser showing stage presence and flair.',
-                imageData: 'images/singer3.jpg',
-                videoData: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-                uploadedAt: '2026-03-21T19:10:00Z'
-            }
-        ];
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                const video = entry.target;
-                if (entry.isIntersecting) {
-                    video.muted = true;
-                    video.play().catch(() => {});
-                }
-            });
-        }, {
-            threshold: 0.25
-        });
-
-        function getInteractions() {
-            return JSON.parse(localStorage.getItem(interactionsKey) || '{}');
-        }
-
-        function saveInteractions(data) {
-            localStorage.setItem(interactionsKey, JSON.stringify(data));
-        }
-
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            clearTimeout(window.toastTimer);
-            window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
-        }
-
-        let currentVideoItems = [];
-
-        async function loadVideoItems() {
-            try {
-                const response = await fetch('/api/videos');
-                if (!response.ok) {
-                    throw new Error('API response ' + response.status);
-                }
-                const data = await response.json();
-                allVideoItems = Array.isArray(data) ? data : [];
-                allVideoItems.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
-            } catch (error) {
-                console.warn('Unable to load videos from backend, using fallback data:', error);
-                allVideoItems = getSavedVideos();
-            }
-            currentVideoItems = [...allVideoItems];
-            renderFeed();
-        }
-
-        function getSavedVideos() {
-            const savedTalents = JSON.parse(localStorage.getItem(storageKey) || '[]');
-            const savedVideoTalents = savedTalents.filter(talent => talent.videoData);
-            return savedVideoTalents.length ? savedVideoTalents.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt)) : defaultSampleVideos;
-        }
-
-        function filterVideoItems(query) {
-            if (!query) {
-                return [...allVideoItems];
-            }
-            return allVideoItems.filter(item => item.name?.toLowerCase().includes(query));
-        }
-
-        function applySearchFilter() {
-            const query = searchInput?.value.trim().toLowerCase() || '';
-            currentVideoItems = filterVideoItems(query);
-            renderFeed();
-        }
-
-        function renderEmptyState() {
-            videoFeedContainer.innerHTML = `
-                <div class="video-empty">
-                    <h3>Hakuna video bado</h3>
-                    <p>Tafadhali ongeza video kwenye <a href="Upload Talent.html">Upload Talent</a>. Video zilizopakuliwa zitaonekana hapa kwa kuangalia, like, na komentari.</p>
-                </div>
-            `;
-        }
-
-        function renderFeed() {
-            const videoItems = currentVideoItems;
-            const interactions = getInteractions();
-
-            if (!videoItems.length) {
-                renderEmptyState();
-                return;
-            }
-
-            videoFeedContainer.innerHTML = '';
-
-            videoItems.forEach((talent, index) => {
-                const key = talent.uploadedAt || `video-${index}`;
-                const data = interactions[key] || {
-                    likes: 0,
-                    shares: 0,
-                    comments: [],
-                    liked: false
-                };
-
-                const card = document.createElement('article');
-                card.className = 'video-card';
-                card.dataset.videoKey = key;
-                card.innerHTML = `
-                    <video playsinline autoplay muted preload="metadata" loop poster="${talent.imageData || 'images/singer.jpg'}" class="video-player">
-                        <source src="${talent.videoData}" type="video/mp4">
-                        Your browser does not support video playback.
-                    </video>
-                    <div class="video-info">
-                        <h3>${talent.name}</h3>
-                        <p>${talent.category} — ${talent.description || 'No description available'}</p>
-                        <div class="video-meta">Uploaded: ${new Date(talent.uploadedAt).toLocaleString()}</div>
-                        <div class="action-bar">
-                            <button class="action-button like-button ${data.liked ? 'active' : ''}" data-action="like">❤️ ${data.likes}</button>
-                            <button class="action-button comment-button" data-action="comment">💬 ${data.comments.length}</button>
-                            <button class="action-button share-button" data-action="share">📤 ${data.shares}</button>
-                        </div>
-                        <div class="comment-section">
-                            <div class="comment-list">
-                                ${data.comments.length ? data.comments.map(c => `<div class="comment-item"><strong>${c.user}:</strong> ${c.text}</div>`).join('') : '<p style="color: #a5b7d6;">No comments yet. Be the first to say something!</p>'}
-                            </div>
-                            <form class="comment-form" data-key="${key}">
-                                <input type="text" name="comment" placeholder="Add a comment..." required>
-                                <button type="submit">Send</button>
-                            </form>
-                        </div>
-                    </div>
-                `;
-
-                videoFeedContainer.appendChild(card);
-                const video = card.querySelector('video');
-                video.addEventListener('click', (event) => event.preventDefault());
-                observer.observe(video);
-            });
-        }
-
-        function updateInteraction(key, updateFn) {
-            const interactions = getInteractions();
-            const current = interactions[key] || { likes: 0, shares: 0, comments: [], liked: false };
-            interactions[key] = updateFn(current);
-            saveInteractions(interactions);
-        }
-
-        videoFeedContainer.addEventListener('click', (event) => {
-            const button = event.target.closest('.action-button');
-            if (!button) return;
-            const card = button.closest('.video-card');
-            const key = card.dataset.videoKey;
-            const action = button.dataset.action;
-
-            if (action === 'like') {
-                updateInteraction(key, (current) => {
-                    const liked = !current.liked;
-                    return {
-                        ...current,
-                        liked,
-                        likes: current.likes + (liked ? 1 : -1)
-                    };
-                });
-                renderFeed();
-            }
-
-            if (action === 'comment') {
-                showToast('Tumia sanduku la comment chini ya video kuandika maoni.');
-            }
-
-            if (action === 'share') {
-                updateInteraction(key, (current) => ({ ...current, shares: current.shares + 1 }));
-                navigator.clipboard?.writeText(window.location.href + '#video=' + encodeURIComponent(key)).catch(() => {});
-                showToast('Link ikopwe! Shiriki text hii kwa marafiki wako.');
-                renderFeed();
-            }
-        });
-
-        videoFeedContainer.addEventListener('submit', (event) => {
-            if (!event.target.classList.contains('comment-form')) return;
-            event.preventDefault();
-            const key = event.target.dataset.key;
-            const input = event.target.querySelector('input[name="comment"]');
-            const commentText = input.value.trim();
-            if (!commentText) return;
-
-            updateInteraction(key, (current) => ({
-                ...current,
-                comments: [...current.comments, { user: 'Guest', text: commentText }]
-            }));
-
-            input.value = '';
-            renderFeed();
-        });
-
         document.addEventListener('DOMContentLoaded', () => {
-            loadVideoItems();
-            if (searchInput) {
-                searchInput.addEventListener('input', applySearchFilter);
-            }
-            const currentPath = window.location.pathname.split('/').pop();
-            document.querySelectorAll('nav a').forEach(link => {
-                if (link.getAttribute('href') === currentPath || (currentPath === '' && link.getAttribute('href') === 'index.html')) {
-                    link.classList.add('active');
-                }
+            // Init TikTok feed with custom container
+            window.videoFeed = new TikTokVideoFeed('videoFeedContainer');
+
+            // Search filter
+            const searchInput = document.getElementById('videoSearchInput');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('#videoFeedContainer .tiktok-card');
+                cards.forEach(card => {
+                    const name = card.querySelector('h3')?.textContent.toLowerCase() || '';
+                    const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
+                    card.style.display = (name.includes(query) || desc.includes(query)) ? '' : 'none';
+                });
             });
         });
     </script>
