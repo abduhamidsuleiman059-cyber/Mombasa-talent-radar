@@ -1,0 +1,413 @@
+/* TikTok-Style Video Feed CSS */
+
+.feed-hero {
+    padding: 40px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(46, 134, 222, 0.2), rgba(255, 143, 31, 0.2));
+    border-bottom: 2px solid rgba(46, 134, 222, 0.5);
+    margin-bottom: 0;
+}
+
+.feed-hero h2 {
+    font-size: 2.2rem;
+    margin: 0 0 10px;
+    background: linear-gradient(120deg, #2e86de, #ff8f1f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.feed-hero p {
+    color: #d1dcf4;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.tiktok-feed-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    gap: 0;
+}
+
+.tiktok-card {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    position: relative;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    background: #000;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.video-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 10vh;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+    pointer-events: none;
+}
+
+.video-bottom {
+    color: #fff;
+    padding: 0 16px 20px;
+}
+
+.video-caption h3 {
+    margin: 0 0 8px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.video-caption p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Side action buttons - TikTok style */
+.side-actions {
+    position: absolute;
+    right: 12px;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 10;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    font-size: 1.8rem;
+    padding: 8px;
+}
+
+.action-btn:hover {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 8px rgba(46, 134, 222, 0.5));
+}
+
+.action-btn.active {
+    filter: drop-shadow(0 0 12px rgba(255, 107, 107, 0.8));
+}
+
+.action-btn .icon {
+    font-size: 2rem;
+    display: block;
+}
+
+.action-btn .count {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Comment panel */
+.comment-panel {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    max-height: 70vh;
+    background: rgba(20, 25, 40, 0.98);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comment-header h4 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.comment-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.comment-item {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border-left: 3px solid rgba(46, 134, 222, 0.5);
+}
+
+.comment-item strong {
+    color: #2e86de;
+    font-weight: 600;
+}
+
+.comment-item p {
+    margin: 4px 0 0;
+    color: rgba(255, 255, 255, 0.85);
+    word-break: break-word;
+}
+
+.no-comments {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 30px 10px;
+    margin: 0;
+}
+
+.comment-input-form {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comment-input-form input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: background 0.2s ease;
+}
+
+.comment-input-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.comment-input-form input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(46, 134, 222, 0.5);
+}
+
+.comment-input-form button {
+    background: rgba(46, 134, 222, 0.8);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.comment-input-form button:hover {
+    background: rgba(46, 134, 222, 1);
+    transform: scale(1.05);
+}
+
+/* Feed empty state */
+.feed-empty {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.feed-empty a {
+    color: #2e86de;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 4px;
+}
+
+.feed-empty a:hover {
+    text-decoration: underline;
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: rgba(46, 134, 222, 0.95);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-weight: 600;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .tiktok-card {
+        height: 100vh;
+    }
+
+    .side-actions {
+        right: 8px;
+        bottom: 80px;
+        gap: 12px;
+    }
+
+    .action-btn {
+        font-size: 1.6rem;
+    }
+
+    .action-btn .icon {
+        font-size: 1.6rem;
+    }
+
+    .comment-panel {
+        max-width: 100%;
+        width: 100%;
+        height: 60vh;
+    }
+
+    .video-caption h3 {
+        font-size: 1.1rem;
+    }
+
+    .video-caption p {
+        font-size: 0.85rem;
+    }
+
+    .action-btn .count {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .tiktok-card {
+        height: 100vh;
+    }
+
+    .side-actions {
+        right: 6px;
+        bottom: 60px;
+        gap: 10px;
+    }
+
+    .action-btn {
+        font-size: 1.4rem;
+        padding: 4px;
+    }
+
+    .action-btn .icon {
+        font-size: 1.4rem;
+    }
+
+    .comment-panel {
+        height: 55vh;
+    }
+
+    .video-overlay {
+        padding-bottom: 90px;
+    }
+
+    .video-caption h3 {
+        font-size: 1rem;
+    }
+
+    .video-caption p {
+        font-size: 0.8rem;
+    }
+}
+
+/* Scrollbar customization */
+.tiktok-feed-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.tiktok-feed-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.tiktok-feed-container::-webkit-scrollbar-thumb {
+    background: rgba(46, 134, 222, 0.5);
+    border-radius: 4px;
+}
+
+.tiktok-feed-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(46, 134, 222, 0.8);
+}

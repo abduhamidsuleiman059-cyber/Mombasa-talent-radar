@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mombasa Talent Radar</title>
+  <meta name="description" content="Mombasa Talent Radar helps you discover local Mombasa artists, singers, dancers and painters with a searchable platform.">
+  <meta name="keywords" content="Mombasa Talent Radar, Mombasa artists, local talent, singer profiles, dancer showcase, painter portfolios, talent discovery">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Mombasa Talent Radar">
+  <meta property="og:description" content="Search and discover local talent from Mombasa through a curated talent dashboard.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="images/singer.jpg">
+  <meta property="og:image:alt" content="Mombasa Talent Radar showcase image">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mombasa Talent Radar">
+  <meta name="twitter:description" content="Discover Mombasa talent with searchable artists, videos, and profiles.">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Mombasa Talent Radar",
+    "url": "https://example.com/",
+    "description": "Search and discover local talent from Mombasa.",
+    "inLanguage": "en-US"
+  }
+  </script>
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <h1>Mombasa Talent Radar</h1>
+      <p>Search, discover and connect with the best local talent from Mombasa.</p>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="Discover Talent.html">Discover Talent</a></li>
+        <li><a href="Upload Talent.html">Upload Talent</a></li>
+        <li><a href="videos.html">Videos</a></li>
+        <li><a href="tiktok-feed.html">Discover Feed</a></li>
+        <li><a href="admin.html">Admin</a></li>
+        <li><a href="Artist profile.html">Artist Profile</a></li>
+        <li><a href="Contact.html">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <h2>Find the best local talent in Mombasa</h2>
+        <p>Use the full search experience to explore singers, dancers, painters and video artists on one platform.</p>
+      </div>
+    </section>
+
+    <section class="search-section">
+      <div class="search-card">
+        <label for="talentSearch">Search talent names</label>
+        <input id="talentSearch" class="search-input" type="search" placeholder="Type a name or talent category..." autocomplete="off">
+      </div>
+    </section>
+
+    <section class="talent-section">
+      <div class="talent-grid" id="talentGrid">
+        <article class="card" data-name="Singer">
+          <img src="images/singer.jpg" alt="Singer">
+          <h3>Singer</h3>
+          <p class="lyrics">🎵 Melody za moyo zinaita mbali<br>📖 Kila note ni hadithi isiyo isha</p>
+          <p class="description">Soulful performances that touch hearts, discover the voices shaping Mombasa culture.</p>
+        </article>
+
+        <article class="card" data-name="Dancer">
+          <img src="images/dancer.jpg" alt="Dancer">
+          <h3>Dancer</h3>
+          <p class="lyrics">💃 Mwili unaongea bila maneno<br>🔥 Kila step ni moto wa ndani</p>
+          <p class="description">Explore dancers who bring rhythm, grace and powerful movement to the stage.</p>
+        </article>
+
+        <article class="card" data-name="Painter">
+          <img src="images/painter.jpg" alt="Painter">
+          <h3>Painter</h3>
+          <p class="lyrics">🎨 Rangi zina piga kelele kimya<br>🖌️ Kila mchoro ni sauti ya nafsi</p>
+          <p class="description">Discover painters whose artwork expresses Mombasa's vibrant spirit and stories.</p>
+        </article>
+      </div>
+
+      <div id="noResults" class="no-results" hidden>
+        <p>No talent matches found. Try a broader search term or clear the field.</p>
+      </div>
+    </section>
+
+    <section class="platform-description">
+      <h2>Why Mombasa Talent Radar?</h2>
+      <p>Mombasa Talent Radar is designed for easy discovery of local performers and creatives, giving each talent a searchable online presence with engaging profiles.</p>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchInput = document.getElementById('talentSearch');
+      const talentGrid = document.getElementById('talentGrid');
+      const noResults = document.getElementById('noResults');
+      const cards = Array.from(talentGrid.querySelectorAll('.card'));
+
+      function filterTalents() {
+        const query = searchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const name = card.dataset.name.toLowerCase();
+          const matches = name.includes(query);
+          card.style.display = matches ? 'grid' : 'none';
+          if (matches) visibleCount += 1;
+        });
+
+        noResults.hidden = visibleCount > 0;
+      }
+
+      searchInput.addEventListener('input', filterTalents);
+      filterTalents();
+    });
+  </script>
+</body>
+</html>

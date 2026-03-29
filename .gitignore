@@ -1,0 +1,7 @@
+node_modules/
+uploads/
+data/
+
+# Ignore Windows and installer artifacts
+desktop.ini
+node-v20.20.1-x64.msi

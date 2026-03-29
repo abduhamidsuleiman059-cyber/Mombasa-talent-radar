@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Discover Talent</title>
+</head>
+<body>
+    <header>
+        <h1>Discover Talents in Mombasa</h1>
+        <p>Find amazing local talents performing on Mombasa's streets.</p>
+    </header>
+    <nav>
+        <ul>
+            <a href="index.html">Home</a>
+            <a href="Discover Talent.html">Discover Talent</a>
+            <a href="Upload Talent.html">Upload Talent</a>
+            <a href="videos.html">Videos</a>
+            <a href="tiktok-feed.html">Discover Feed</a>
+            <a href="admin.html">Admin</a>
+            <a href="Artist profile.html">Artist Profile</a>
+            <a href="Contact.html">Contact</a>
+        </ul>
+    </nav>
+    <section class="discover-container">
+        <div class="discover-card">
+            <img src="images/singer.jpg" alt="Singer">
+            <h3>Local Singer</h3>
+            <p>Singer</p>
+            <p>Amazing voice from Mombasa</p>
+            <button class="view-button">View Talent</button>
+        </div>
+        <div class="discover-card">
+            <img src="images/singer2.jpg" alt="Singer">
+            <h3>Street Vocalist</h3>
+            <p>Singer</p>
+            <p>Talented performer with unique style</p>
+            <button class="view-button">View Talent</button>
+        </div>
+        <div class="discover-card">
+            <img src="images/singer3.jpg" alt="Singer">
+            <h3>Classical Singer</h3>
+            <p>Singer</p>
+            <p>Professional artist with beautiful voice</p>
+            <button class="view-button">View Talent</button>
+        </div>
+    </section>
+
+    <!-- TALENT DETAIL POPUP MODAL -->
+    <div id="talentModal" class="modal">
+        <div class="modal-content-popup">
+            <span class="close-modal">&times;</span>
+            
+            <div class="modal-header">
+                <img id="modalImage" src="" alt="Talent Image" class="modal-image">
+            </div>
+            
+            <div class="modal-body">
+                <h2 id="modalTitle" class="modal-title"></h2>
+                
+                <div class="modal-info">
+                    <p id="modalCategory" class="modal-category"></p>
+                    <p id="modalDesc" class="modal-description"></p>
+                </div>
+
+                <div class="modal-media">
+                    <div id="voiceSection" class="media-section" style="display:none;">
+                        <h4>🎵 Voice/Audio</h4>
+                        <audio id="modalVoice" controls style="width: 100%; margin-top: 10px;"></audio>
+                    </div>
+
+                    <div id="videoSection" class="media-section" style="display:none;">
+                        <h4>🎬 Video</h4>
+                        <video id="modalVideo" controls style="width: 100%; height: auto; margin-top: 10px; border-radius: 8px;"></video>
+                    </div>
+                </div>
+
+                <button class="modal-close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function appendSavedTalents() {
+            const container = document.querySelector('.discover-container');
+            if (!container) return;
+
+            let savedTalents = [];
+            try {
+                const response = await fetch('/api/talents');
+                if (response.ok) {
+                    savedTalents = await response.json();
+                }
+            } catch (error) {
+                console.warn('Unable to load talents from backend:', error);
+            }
+
+            if (!savedTalents.length) {
+                savedTalents = JSON.parse(localStorage.getItem('mombasaTalents') || '[]');
+            }
+
+            if (!savedTalents.length) {
+                setupModalFunctionality();
+                return;
+            }
+
+            container.querySelectorAll('.discover-card').forEach(card => card.remove());
+
+            savedTalents.forEach((talent) => {
+                const card = document.createElement('div');
+                card.className = 'discover-card';
+
+                card.innerHTML = `
+                    <img src="${talent.imageData}" alt="${talent.name}">
+                    <h3>${talent.name}</h3>
+                    <p>${talent.category}</p>
+                    <p style="font-size: 0.9rem; color: #b8c9e0;">${talent.description.substring(0, 60)}${talent.description.length > 60 ? '...' : ''}</p>
+                    <button class="view-button">View Talent</button>
+                `;
+
+                container.appendChild(card);
+                const viewBtn = card.querySelector('.view-button');
+                viewBtn.dataset.talent = JSON.stringify(talent);
+            });
+
+            // Setup modal functionality
+            setupModalFunctionality();
+        }
+
+        function setupModalFunctionality() {
+            const modal = document.getElementById('talentModal');
+            const closeModal = document.querySelector('.close-modal');
+            const closeBtn = document.querySelector('.modal-close-btn');
+            const viewButtons = document.querySelectorAll('.view-button');
+
+            viewButtons.forEach((btn) => {
+                btn.addEventListener('click', function() {
+                    let talent = null;
+
+                    if (this.dataset && this.dataset.talent) {
+                        try {
+                            talent = JSON.parse(this.dataset.talent);
+                        } catch (err) {
+                            talent = null;
+                        }
+                    }
+
+                    if (!talent) {
+                        const parent = btn.closest('.discover-card');
+                        const img = parent.querySelector('img').src;
+                        const name = parent.querySelector('h3').textContent;
+                        const paragraphs = parent.querySelectorAll('p');
+
+                        const category = paragraphs.length > 1 ? paragraphs[0].textContent : '';
+                        const description = paragraphs.length > 1 ? paragraphs[1].textContent : (paragraphs[0] ? paragraphs[0].textContent : '');
+
+                        talent = {
+                            imageData: img,
+                            name: name,
+                            category: category || 'Unknown',
+                            description: description || 'No description available',
+                            voiceData: null,
+                            videoData: null
+                        };
+                    }
+
+                    const modalImage = document.getElementById('modalImage');
+                    const modalTitle = document.getElementById('modalTitle');
+                    const modalCategory = document.getElementById('modalCategory');
+                    const modalDesc = document.getElementById('modalDesc');
+                    const voiceSection = document.getElementById('voiceSection');
+                    const videoSection = document.getElementById('videoSection');
+                    const audioElement = document.getElementById('modalVoice');
+                    const videoElement = document.getElementById('modalVideo');
+
+                    modalImage.src = talent.imageData;
+                    modalTitle.textContent = talent.name;
+                    modalCategory.innerHTML = `<strong>Category:</strong> ${talent.category}`;
+                    modalDesc.innerHTML = `<strong>Description:</strong> ${talent.description}`;
+
+                    if (talent.voiceData) {
+                        voiceSection.style.display = 'block';
+                        audioElement.src = talent.voiceData;
+                    } else {
+                        voiceSection.style.display = 'none';
+                        audioElement.src = '';
+                    }
+
+                    if (talent.videoData) {
+                        videoSection.style.display = 'block';
+                        videoElement.src = talent.videoData;
+                    } else {
+                        videoSection.style.display = 'none';
+                        videoElement.src = '';
+                    }
+
+                    modal.style.display = 'block';
+                });
+            });
+
+            // Close modal
+            function hideModal() {
+                modal.style.display = 'none';
+
+                const audioElement = document.getElementById('modalVoice');
+                const videoElement = document.getElementById('modalVideo');
+
+                if (audioElement) {
+                    audioElement.pause();
+                    audioElement.currentTime = 0;
+                    audioElement.src = '';
+                }
+
+                if (videoElement) {
+                    videoElement.pause();
+                    videoElement.currentTime = 0;
+                    videoElement.src = '';
+                }
+            }
+
+            closeModal.addEventListener('click', hideModal);
+            closeBtn.addEventListener('click', hideModal);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    hideModal();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', appendSavedTalents);
+    </script>
+
+    <script>
+        // Active Navigation Script
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname.split('/').pop();
+            console.log('Current path:', currentPath);
+            const navLinks = document.querySelectorAll('nav a');
+
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                console.log('Checking link:', linkHref);
+                if (linkHref === currentPath || (currentPath === '' && linkHref === 'index.html')) {
+                    link.classList.add('active');
+                    console.log('Added active to:', linkHref);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

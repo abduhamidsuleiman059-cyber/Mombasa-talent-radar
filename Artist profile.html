@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Profile - Mombasa Talent Radar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header>
+        <h1>Mombasa Talent Radar</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="Discover Talent.html">Discover Talent</a></li>
+                <li><a href="Upload Talent.html">Upload Talent</a></li>
+                <li><a href="videos.html">Videos</a></li>
+                <li><a href="tiktok-feed.html">Discover Feed</a></li>
+                <li><a href="admin.html">Admin</a></li>
+                <li><a href="Artist profile.html">Artist Profile</a></li>
+                <li><a href="Contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ARTIST PROFILE SECTION -->
+    <section class="artist-profile">
+        <div class="profile-container">
+            <div class="profile-image">
+                <img src="images/singer.jpg" alt="Featured Artist">
+            </div>
+            <div class="profile-info">
+                <h2>Featured Artist: Local Singer</h2>
+                <p><strong>Name:</strong> Amina Hassan</p>
+                <p><strong>Genre:</strong> Afrobeat, Bongo Flava</p>
+                <p><strong>Location:</strong> Mombasa, Kenya</p>
+                <p><strong>Bio:</strong> Amina is a talented singer from Mombasa with a voice that captivates audiences. She has performed at various local events and is known for her energetic performances and soulful melodies.</p>
+                <p><strong>Achievements:</strong> Winner of Mombasa Music Awards 2025, Featured in local radio stations.</p>
+                <button>Contact Artist</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Active Navigation Script
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('nav a');
+
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                if (linkHref === currentPath || (currentPath === '' && linkHref === 'index.html')) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\SALAH\Desktop\Mombasa-talent-radar\Artist profile.html

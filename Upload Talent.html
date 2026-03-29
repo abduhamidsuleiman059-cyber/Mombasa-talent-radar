@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Upload Talent</title>
+</head>
+<body>
+    <header>
+        <h1>Upload Your Talent</h1>
+        <p>Share your talent with the Mombasa community.</p>
+    </header>
+
+    <nav>
+        <ul>
+            <a href="index.html">Home</a>
+            <a href="Discover Talent.html">Discover Talent</a>
+            <a href="Upload Talent.html">Upload Talent</a>
+            <a href="videos.html">Videos</a>
+            <a href="tiktok-feed.html">Discover Feed</a>
+            <a href="admin.html">Admin</a>
+            <a href="Artist profile.html">Artist Profile</a>
+            <a href="Contact.html">Contact</a>
+        </ul>
+    </nav>
+
+    <section class="upload-form-section">
+        <h2>Upload Form</h2>
+            <form id="talentForm" class="upload-form" action="/api/talents" method="post" enctype="multipart/form-data">
+
+            <label for="name">Artist Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" required>
+
+            <label for="category">Category</label>
+            <select id="category" name="category" required>
+                <option value="">Choose</option>
+                <option value="Singer">Singer</option>
+                <option value="Dancer">Dancer</option>
+                <option value="Painter">Painter</option>
+                <option value="Poet">Poet</option>
+            </select>
+
+            <label for="description">Description</label>
+            <textarea id="description" name="description" rows="4" placeholder="Describe your talent"></textarea>
+
+            <label for="photo">Talent Photo</label>
+            <input id="photo" name="photo" type="file" accept="image/*" required>
+
+            <label for="voice">Voice/Audio (Optional)</label>
+            <input id="voice" name="voice" type="file" accept="audio/*">
+
+            <label for="video">Video (Optional)</label>
+            <input id="video" name="video" type="file" accept="video/*">
+
+            <button type="submit">Upload</button>
+        </form>
+
+        <div id="uploadResult" class="upload-result"></div>
+    </section>
+
+    <script>
+        const talentForm = document.getElementById('talentForm');
+        const uploadResult = document.getElementById('uploadResult');
+
+        talentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value;
+            const photoInput = document.getElementById('photo');
+
+            if (!name || !category || !photoInput.files.length) {
+                uploadResult.textContent = 'Please complete all required fields.';
+                return;
+            }
+
+            const formData = new FormData(talentForm);
+            uploadResult.textContent = 'Submitting...';
+
+            try {
+                const response = await fetch('/api/talents', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Server responded with status ' + response.status);
+                }
+
+                uploadResult.innerHTML = '<h3>Upload successful!</h3><p>Your talent has been submitted. Once the backend is connected, it will appear in the Videos feed.</p>';
+                talentForm.reset();
+            } catch (error) {
+                console.warn('Upload API failed, saving locally as fallback:', error);
+                saveTalentLocally();
+            }
+        });
+
+        function saveTalentLocally() {
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim() || '-';
+            const photoInput = document.getElementById('photo');
+            const voiceInput = document.getElementById('voice');
+            const videoInput = document.getElementById('video');
+
+            const savedTalent = {
+                id: Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+                name,
+                category,
+                description,
+                imageData: null,
+                voiceData: null,
+                videoData: null,
+                uploadedAt: new Date().toISOString()
+            };
+
+            const readers = [];
+
+            if (photoInput.files.length) {
+                readers.push(readFile(photoInput.files[0]).then(data => savedTalent.imageData = data));
+            }
+            if (voiceInput.files.length) {
+                readers.push(readFile(voiceInput.files[0]).then(data => savedTalent.voiceData = data));
+            }
+            if (videoInput.files.length) {
+                readers.push(readFile(videoInput.files[0]).then(data => savedTalent.videoData = data));
+            }
+
+            Promise.all(readers).then(() => {
+                const existingTalents = JSON.parse(localStorage.getItem('mombasaTalents') || '[]');
+                existingTalents.push(savedTalent);
+                localStorage.setItem('mombasaTalents', JSON.stringify(existingTalents));
+                uploadResult.innerHTML = '<h3>Upload saved locally</h3><p>Backend is not available. The video will appear in the fallback feed on the Videos page.</p>';
+                talentForm.reset();
+            });
+        }
+
+        function readFile(file) {
+            return new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+
+    <script>
+        // Active Navigation Script
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname.split('/').pop();
+            console.log('Current path:', currentPath);
+            const navLinks = document.querySelectorAll('nav a');
+
+            navLinks.forEach(link => {
+                const linkHref = link.getAttribute('href');
+                console.log('Checking link:', linkHref);
+                if (linkHref === currentPath || (currentPath === '' && linkHref === 'index.html')) {
+                    link.classList.add('active');
+                    console.log('Added active to:', linkHref);
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
