@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=3">
     <title>Discover Talent</title>
 </head>
 <body>
@@ -30,22 +30,22 @@
         <div class="discover-card">
             <img src="images/singer.jpg" alt="Singer">
             <h3>Local Singer</h3>
-            <p>Singer</p>
-            <p>Amazing voice from Mombasa</p>
+            <p class="discover-category">Singer</p>
+            <p class="discover-description">Amazing voice from Mombasa</p>
             <button class="view-button">View Talent</button>
         </div>
         <div class="discover-card">
             <img src="images/singer2.jpg" alt="Singer">
             <h3>Street Vocalist</h3>
-            <p>Singer</p>
-            <p>Talented performer with unique style</p>
+            <p class="discover-category">Singer</p>
+            <p class="discover-description">Talented performer with unique style</p>
             <button class="view-button">View Talent</button>
         </div>
         <div class="discover-card">
             <img src="images/singer3.jpg" alt="Singer">
             <h3>Classical Singer</h3>
-            <p>Singer</p>
-            <p>Professional artist with beautiful voice</p>
+            <p class="discover-category">Singer</p>
+            <p class="discover-description">Professional artist with beautiful voice</p>
             <button class="view-button">View Talent</button>
         </div>
     </section>
@@ -155,8 +155,8 @@
                 card.innerHTML = `
                     <img src="${talent.imageData}" alt="${talent.name}">
                     <h3>${talent.name}</h3>
-                    <p>${talent.category}</p>
-                    <p style="font-size: 0.9rem; color: #b8c9e0;">${talent.description.substring(0, 60)}${talent.description.length > 60 ? '...' : ''}</p>
+                    <p class="discover-category">${talent.category}</p>
+                    <p class="discover-description">${talent.description.substring(0, 60)}${talent.description.length > 60 ? '...' : ''}</p>
                     <button class="view-button">View Talent</button>
                 `;
 
@@ -174,7 +174,57 @@
             const closeBtn = document.querySelector('.modal-close-btn');
             const viewButtons = document.querySelectorAll('.view-button');
 
+            if (!modal) return;
+
+            const closeReady = modal.dataset.modalCloseReady === '1';
+
+            function hideModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = modal.__previousOverflow || '';
+
+                const audioElement = document.getElementById('modalVoice');
+                const videoElement = document.getElementById('modalVideo');
+
+                if (audioElement) {
+                    audioElement.pause();
+                    audioElement.currentTime = 0;
+                    audioElement.src = '';
+                }
+
+                if (videoElement) {
+                    videoElement.pause();
+                    videoElement.currentTime = 0;
+                    videoElement.src = '';
+                }
+            }
+
+            // Bind close handlers only once per page life-cycle.
+            if (!closeReady) {
+                modal.dataset.modalCloseReady = '1';
+
+                if (closeModal) closeModal.addEventListener('click', hideModal);
+                if (closeBtn) closeBtn.addEventListener('click', hideModal);
+
+                // ESC to close
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape' && modal.style.display !== 'none') {
+                        hideModal();
+                    }
+                });
+
+                // Click outside content to close
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        hideModal();
+                    }
+                });
+            }
+
             viewButtons.forEach((btn) => {
+                // Avoid attaching duplicate listeners to the same button element
+                if (btn.dataset.viewReady === '1') return;
+                btn.dataset.viewReady = '1';
+
                 btn.addEventListener('click', function() {
                     let talent = null;
 
@@ -235,36 +285,10 @@
                         videoElement.src = '';
                     }
 
-                    modal.style.display = 'block';
+                    modal.__previousOverflow = document.body.style.overflow;
+                    document.body.style.overflow = 'hidden';
+                    modal.style.display = 'flex';
                 });
-            });
-
-            function hideModal() {
-                modal.style.display = 'none';
-
-                const audioElement = document.getElementById('modalVoice');
-                const videoElement = document.getElementById('modalVideo');
-
-                if (audioElement) {
-                    audioElement.pause();
-                    audioElement.currentTime = 0;
-                    audioElement.src = '';
-                }
-
-                if (videoElement) {
-                    videoElement.pause();
-                    videoElement.currentTime = 0;
-                    videoElement.src = '';
-                }
-            }
-
-            closeModal.addEventListener('click', hideModal);
-            closeBtn.addEventListener('click', hideModal);
-
-            window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    hideModal();
-                }
             });
         }
 

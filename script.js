@@ -1,1 +1,11 @@
-document.addEventListener('DOMContentLoaded', function() {\n  const currentPath = window.location.pathname.split('/').pop() || 'index.html';\n  const navLinks = document.querySelectorAll('nav a');\n\n  navLinks.forEach(link => {\n    const linkHref = link.getAttribute('href');\n    if (linkHref === currentPath) {\n      link.classList.add('active');\n    }\n  });\n});
+document.addEventListener('DOMContentLoaded', function() {
+  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  const navLinks = document.querySelectorAll('nav a');
+
+  navLinks.forEach(link => {
+    const linkHref = link.getAttribute('href');
+    if (linkHref === currentPath) {
+      link.classList.add('active');
+    }
+  });
+});

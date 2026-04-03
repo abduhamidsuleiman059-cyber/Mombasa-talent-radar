@@ -221,6 +221,26 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Mombasa Talent Radar backend running on http://localhost:${PORT}`);
-});
+function startServer(port, maxAttempts = 10) {
+  const portNumber = Number(port);
+  if (!Number.isFinite(portNumber) || portNumber <= 0) {
+    console.warn(`Invalid PORT value "${port}". Falling back to 3000.`);
+    return startServer(3000, maxAttempts);
+  }
+
+  const server = app.listen(portNumber, () => {
+    console.log(`Mombasa Talent Radar backend running on http://localhost:${portNumber}`);
+  });
+
+  server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE' && maxAttempts > 0) {
+      console.warn(`Port ${portNumber} is in use. Trying ${portNumber + 1}...`);
+      startServer(portNumber + 1, maxAttempts - 1);
+      return;
+    }
+    console.error('Failed to start server:', err);
+    process.exit(1);
+  });
+}
+
+startServer(PORT);
