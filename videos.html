@@ -90,13 +90,20 @@
 </head>
 <body>
     <header>
-        <h1>Mombasa Talent Radar</h1>
+        <div class="header-top">
+            <h1>Mombasa Talent Radar</h1>
+        </div>
         <nav>
-            <ul>
+            <button class="hamburger" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
                 <li><a href="index.html">🏠 Home</a></li>
                 <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
                 <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
-                <li><a href="videos.html" class="active">🎥 Videos</a></li>
+                <li><a href="videos.html">🎥 Videos</a></li>
                 <li><a href="Artist profile.html">👤 Artist Profile</a></li>
                 <li><a href="Contact.html">📧 Contact</a></li>
             </ul>
@@ -158,5 +165,6 @@
             });
         });
     </script>
+    <script src="script.js"></script>
 </body>
 </html>

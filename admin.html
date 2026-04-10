@@ -48,19 +48,26 @@
 </head>
 <body>
     <header>
-        <h1>Admin Panel</h1>
-        <p>View uploaded talents and manage the project data.</p>
+        <div class="header-top">
+            <h1>Admin Panel</h1>
+            <p>View uploaded talents and manage the project data.</p>
+        </div>
+        <nav>
+            <button class="hamburger" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
+                <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+                <li><a href="videos.html">🎥 Videos</a></li>
+                <li><a href="Artist profile.html">👤 Artist Profile</a></li>
+                <li><a href="Contact.html">📧 Contact</a></li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-        <ul>
-            <li><a href="index.html">🏠 Home</a></li>
-            <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
-            <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
-            <li><a href="videos.html">🎥 Videos</a></li>
-            <li><a href="Artist profile.html">👤 Artist Profile</a></li>
-            <li><a href="Contact.html">📧 Contact</a></li>
-        </ul>
-    </nav>
 
     <section class="upload-form-section">
         <h2>Uploaded Talent Entries</h2>
@@ -138,5 +145,6 @@
 
         document.addEventListener('DOMContentLoaded', loadAdminData);
     </script>
+    <script src="script.js"></script>
 </body>
 </html>

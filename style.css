@@ -414,7 +414,8 @@ nav ul{
 /* Desktop: hide hamburger */
 @media (min-width: 761px){
     .hamburger { display: none; }
-    nav ul.nav-menu { display: flex; }
+    nav ul.nav-menu,
+    nav ul { display: flex; }
 }
 
 /* -----------------------------
