@@ -8,24 +8,26 @@
 </head>
 <body>
     <header>
-        <h1>Discover Talents in Mombasa</h1>
-        <p>Find amazing local talents performing on Mombasa's streets.</p>
+        <div class="header-top">
+            <h1>Discover Talents in Mombasa</h1>
+            <p>Find amazing local talents performing on Mombasa's streets.</p>
+        </div>
+        <nav>
+            <button class="hamburger" aria-label="Toggle Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a href="Discover Talent.html">🔍 Discover Talent</a></li>
+                <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
+                <li><a href="videos.html">🎥 Videos</a></li>
+                <li><a href="Artist profile.html">👤 Artist Profile</a></li>
+                <li><a href="Contact.html">📧 Contact</a></li>
+            </ul>
+        </nav>
     </header>
-    <nav>
-      <button class="hamburger" aria-label="Toggle Menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-      <ul>
-        <li><a href="index.html">🏠 Home</a></li>
-        <li><a href="Discover Talent.html" class="active">🔍 Discover Talent</a></li>
-        <li><a href="Upload Talent.html">➕ Upload Talent</a></li>
-        <li><a href="videos.html">🎥 Videos</a></li>
-        <li><a href="Artist profile.html">👤 Artist Profile</a></li>
-        <li><a href="Contact.html">📧 Contact</a></li>
-      </ul>
-    </nav>
     <section class="discover-container">
         <div class="discover-card">
             <img src="images/singer.jpg" alt="Singer">
@@ -295,5 +297,6 @@
         document.addEventListener('DOMContentLoaded', appendSavedTalents);
     </script>
 
+    <script src="script.js"></script>
 </body>
 </html>
